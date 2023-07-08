@@ -3,7 +3,6 @@
 ## Needed Package
 
 ```text
-libsmartcols-dev
 libsensors4-dev
 ```
 
