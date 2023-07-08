@@ -1,0 +1,112 @@
+mqtt:
+  sensor:
+    - name: "rock_5b_{replace_to_your_defined_name}_memory_total"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.memory_total // 1024 }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "MB"
+    - name: "rock_5b_{replace_to_your_defined_name}_memory_free"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.memory_free // 1024 }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "MB"
+    - name: "rock_5b_{replace_to_your_defined_name}_memory_available"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.memory_available // 1024 }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "MB"
+    - name: "rock_5b_{replace_to_your_defined_name}_memory_usage"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.memory_usage }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "%"
+    - name: "rock_5b_{replace_to_your_defined_name}_cpu_usage"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.cpu_usage }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "%"
+    - name: "rock_5b_{replace_to_your_defined_name}_up_time"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.up_time // 3600 // 24 }}"
+      unit_of_measurement: "day"
+    - name: "rock_5b_{replace_to_your_defined_name}_soc_hot_spot_temperature"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.soc_hot_spot_temperature }}"
+      unit_of_measurement: "℃"
+    - name: "rock_5b_{replace_to_your_defined_name}_nvme_temperature"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.nvme_temperature }}"
+      unit_of_measurement: "℃"
+    - name: "rock_5b_{replace_to_your_defined_name}_nvme_avail_spare"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.nvme_avail_spare }}"
+      unit_of_measurement: "%"
+    - name: "rock_5b_{replace_to_your_defined_name}_mcu_temp"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.mcu_temp }}"
+      unit_of_measurement: "℃"
+    - name: "rock_5b_{replace_to_your_defined_name}_input_voltage"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.input_voltage }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "V"
+    - name: "rock_5b_{replace_to_your_defined_name}_input_current"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.input_current }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "A"
+    - name: "rock_5b_{replace_to_your_defined_name}_input_power"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.input_power }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "W"
+    - name: "rock_5b_{replace_to_your_defined_name}_sensor_temp"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.sensor_temp }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "℃"
+    - name: "rock_5b_{replace_to_your_defined_name}_duty_pwm"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.duty_pwm }}"
+      suggested_display_precision: 2
+      unit_of_measurement: "%"
+    - name: "rock_5b_{replace_to_your_defined_name}_fan_speed"
+      state_topic: "topic/mqtt-ha/rock-5b/status-{replace_to_your_board_cpu_serial}"
+      value_template: "{{ value_json.fan_speed }}"
+      unit_of_measurement: "RPM"
+
+# 中文
+homeassistant:
+  customize:
+    sensor.rock_5b_{replace_to_your_defined_name}_memory_total:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 总内存"
+    sensor.rock_5b_{replace_to_your_defined_name}_memory_free:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 空闲内存"
+    sensor.rock_5b_{replace_to_your_defined_name}_memory_available:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 可用内存"
+    sensor.rock_5b_{replace_to_your_defined_name}_memory_usage:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 内存占用"
+    sensor.rock_5b_{replace_to_your_defined_name}_cpu_usage:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} CPU占用"
+    sensor.rock_5b_{replace_to_your_defined_name}_up_time:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 运行时间"
+    sensor.rock_5b_{replace_to_your_defined_name}_soc_hot_spot_temperature:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} SOC热点温度"
+    sensor.rock_5b_{replace_to_your_defined_name}_nvme_temperature:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} nvme温度"
+    sensor.rock_5b_{replace_to_your_defined_name}_nvme_avail_spare:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} nvme剩余备用空间"
+    sensor.rock_5b_{replace_to_your_defined_name}_mcu_temp:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 温控单片机温度"
+    sensor.rock_5b_{replace_to_your_defined_name}_input_voltage:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 输入电压"
+    sensor.rock_5b_{replace_to_your_defined_name}_input_current:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 输入电流"
+    sensor.rock_5b_{replace_to_your_defined_name}_input_power:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 输入功率"
+    sensor.rock_5b_{replace_to_your_defined_name}_sensor_temp:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 均热板温度"
+    sensor.rock_5b_{replace_to_your_defined_name}_duty_pwm:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 散热PWM占空比"
+    sensor.rock_5b_{replace_to_your_defined_name}_fan_speed:
+      friendly_name: "rock-5b-{replace_to_your_defined_name} 散热风扇转速"
