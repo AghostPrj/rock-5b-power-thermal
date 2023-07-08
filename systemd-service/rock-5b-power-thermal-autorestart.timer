@@ -1,0 +1,11 @@
+[Unit]
+Description=rock-5b-power-thermal autorestart timer
+
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=rock-5b-power-thermal-autorestart.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=rock-5b-power-thermal board side software
+After=network.target
+[Service]
+Type=idle
+WorkingDirectory=/var/lib/rock-5b-power-thermal
+ExecStart=/var/lib/rock-5b-power-thermal/rock-5b-power-thermal
+Restart=always
+LimitNOFILE=65536
+TimeoutStopSec=600
+[Install]
+WantedBy=multi-user.target

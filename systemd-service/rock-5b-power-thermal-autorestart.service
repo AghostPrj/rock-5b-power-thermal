@@ -1,0 +1,6 @@
+[Unit]
+Description=rock-5b-power-thermal autorestart
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/auorestart-rock-5b-power-thermal-service.sh
+LimitNOFILE=65536
