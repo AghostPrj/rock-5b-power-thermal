@@ -4,6 +4,7 @@ After=network.target
 [Service]
 Type=idle
 WorkingDirectory=/var/lib/rock-5b-power-thermal
+ExecStartPre=/bin/bash -c "echo host > /sys/kernel/debug/usb/fc000000.usb/mode"
 ExecStart=/var/lib/rock-5b-power-thermal/rock-5b-power-thermal
 Restart=always
 LimitNOFILE=65536
