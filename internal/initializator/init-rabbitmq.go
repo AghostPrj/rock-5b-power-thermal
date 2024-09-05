@@ -23,7 +23,7 @@ func initRabbitmqClient() {
 		viper.GetString(constData.ConfRabbitmqPortKey) + "/"
 	config := amqp.Config{
 		Vhost:      viper.GetString(constData.ConfRabbitmqVirtualHostKey),
-		ChannelMax: viper.GetInt(constData.ConfRabbitmqChannelMaxKey),
+		ChannelMax: viper.GetUint16(constData.ConfRabbitmqChannelMaxKey),
 		FrameSize:  viper.GetInt(constData.ConfRabbitmqFrameSizeKey),
 		Heartbeat:  viper.GetDuration(constData.ConfRabbitmqHeartBeatKey),
 	}
