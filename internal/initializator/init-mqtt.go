@@ -18,7 +18,7 @@ import (
 )
 
 func initMqtt() {
-	global.MqttUploadTopic = viper.GetString(constData.ConfAppUploadMqttTopicPrefixKey) + getCpuSerialNum()
+	global.MqttUploadTopic = viper.GetString(constData.ConfAppUploadMqttTopicPrefixKey) + getIdString()
 
 	log.WithFields(log.Fields{
 		"op":            "startup",
@@ -35,6 +35,7 @@ func initMqtt() {
 			"step": "init_mqtt_client",
 			"err":  err,
 		}).Panic()
+		return
 	}
 
 	opts.AddBroker(fmt.Sprintf("tcp://%s:%d",

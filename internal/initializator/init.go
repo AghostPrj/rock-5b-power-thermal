@@ -11,6 +11,7 @@ import (
 	"github.com/ggg17226/aghost-go-base/pkg/utils/configUtils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"net"
 	"os/exec"
 	"strings"
 )
@@ -113,4 +114,27 @@ func getCpuSerialNum() (result string) {
 	}
 
 	return
+}
+
+func getMacAddress() (result string) {
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return ""
+	}
+	for _, netInterface := range interfaces {
+		mac := netInterface.HardwareAddr.String()
+		if mac != "" && len(mac) == 17 && strings.Trim(strings.ReplaceAll(mac, ":", ""), "0") != "" {
+			return strings.ReplaceAll(mac, ":", "")
+		}
+	}
+	return ""
+}
+
+func getIdString() (result string) {
+	cpuSerialNum := getCpuSerialNum()
+	if cpuSerialNum != "" && len(cpuSerialNum) > 0 && strings.Trim(cpuSerialNum, "0") != "" {
+		return cpuSerialNum
+	} else {
+		return getMacAddress()
+	}
 }

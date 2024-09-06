@@ -155,9 +155,9 @@ func initRabbitmqExchangeAndQueue() {
 		}).Panic("create exchange error")
 	}
 
-	cpuSerialNum := getCpuSerialNum()
+	idString := getIdString()
 
-	queueName := viper.GetString(constData.ConfAppRabbitmqUploadQueuePrefixKey) + cpuSerialNum
+	queueName := viper.GetString(constData.ConfAppRabbitmqUploadQueuePrefixKey) + idString
 	log.WithFields(log.Fields{
 		"op":         "startup",
 		"step":       "init exchange and queue",
@@ -174,7 +174,7 @@ func initRabbitmqExchangeAndQueue() {
 		}).Panic("create queue " + queueName + " error")
 	}
 
-	routingKey := viper.GetString(constData.ConfAppRabbitmqUploadRoutingPrefixKey) + cpuSerialNum
+	routingKey := viper.GetString(constData.ConfAppRabbitmqUploadRoutingPrefixKey) + idString
 
 	err = ch.QueueBind(queueName, routingKey,
 		viper.GetString(constData.ConfAppRabbitmqUploadExchangeKey), false, nil)
