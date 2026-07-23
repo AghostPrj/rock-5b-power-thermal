@@ -79,7 +79,7 @@ func getCpuSerialNum() (result string) {
 	cmd := exec.Command("bash", "-c", "grep Serial /proc/cpuinfo | awk '{print $3}'")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		result = "---"
+		result = ""
 	} else {
 		result = strings.TrimSpace(strings.ReplaceAll(string(out), "\n", ""))
 	}
@@ -120,7 +120,9 @@ func getMacAddress() (result string) {
 
 func getIdString() (result string) {
 	cpuSerialNum := getCpuSerialNum()
-	if cpuSerialNum != "" && strings.Trim(cpuSerialNum, "0") != "" {
+	if cpuSerialNum != "" &&
+		cpuSerialNum != "---" &&
+		strings.Trim(cpuSerialNum, "0") != "" {
 		return cpuSerialNum
 	} else {
 		return getMacAddress()

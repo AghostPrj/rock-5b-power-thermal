@@ -18,13 +18,29 @@ func GetDataFromSerial(portPath string, chanRcvSerialData chan<- string) {
 		BaudRate: 115200,
 	}
 
-	port, err := serial.Open(portPath, mode)
-	if err != nil {
-		log.Fatal(err)
+	retryDelay := time.Millisecond * 100
+	var port serial.Port
+	var err error
+
+	for {
+		port, err = serial.Open(portPath, mode)
+		if err == nil {
+			break
+		}
+
+		log.WithField("err", err).
+			WithField("retry_delay", retryDelay.String()).
+			Warn("serial port open failed, retrying")
+		time.Sleep(retryDelay)
+
+		retryDelay *= 2
+		if retryDelay > time.Second*5 {
+			retryDelay = time.Second * 5
+		}
 	}
 
 	buff := make([]byte, 1024)
-	retryDelay := time.Millisecond * 100
+	retryDelay = time.Millisecond * 100
 
 	for {
 		n, err := port.Read(buff)
