@@ -7,9 +7,10 @@
 package task
 
 import (
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
-	"time"
 )
 
 func GetDataFromSerial(portPath string, chanRcvSerialData chan<- string) {
@@ -23,26 +24,34 @@ func GetDataFromSerial(portPath string, chanRcvSerialData chan<- string) {
 	}
 
 	buff := make([]byte, 1024)
+	retryDelay := time.Millisecond * 100
 
 	for {
 		n, err := port.Read(buff)
 		if err != nil {
 			if err.Error() == "Port has been closed" {
-				time.Sleep(time.Millisecond * 100)
+				retryDelay *= 2
+				if retryDelay > time.Second*5 {
+					retryDelay = time.Second * 5
+				}
+				log.WithField("retry_delay", retryDelay.String()).Warn("serial port closed, reconnecting")
+				time.Sleep(retryDelay)
 				port, err = serial.Open(portPath, mode)
 				if err != nil {
-					log.WithField("err", err).Fatal()
+					log.WithField("err", err).Warn("serial port reopen failed")
+					continue
 				}
+				retryDelay = time.Millisecond * 100
 			} else {
-				log.WithField("err", err).Fatal()
+				log.WithField("err", err).Warn("serial read error")
+				continue
 			}
 		}
 
 		if n < 1 {
 			continue
-		} else {
-			chanRcvSerialData <- string(buff[:n])
 		}
+		chanRcvSerialData <- string(buff[:n])
 		time.Sleep(time.Millisecond * 10)
 
 	}

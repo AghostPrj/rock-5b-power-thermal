@@ -8,13 +8,14 @@ package initializator
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"time"
 )
 
 func initMqtt() {

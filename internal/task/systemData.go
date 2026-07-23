@@ -7,6 +7,12 @@
 package task
 
 import (
+	"math"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
@@ -15,11 +21,6 @@ import (
 	"github.com/md14454/gosensors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"math"
-	"os"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var (
@@ -86,7 +87,7 @@ func getMemInfo() (memoryTotal, memoryFree, memoryAvailable uint64, memoryUsage 
 		}
 	}
 
-	memoryUsage = math.Trunc((float64(memoryTotal-memoryFree)/float64(memoryTotal))*10000) / 100
+	memoryUsage = math.Trunc((float64(memoryTotal-memoryAvailable)/float64(memoryTotal))*10000) / 100
 
 	return
 }
@@ -110,7 +111,9 @@ func getCpuInfo() (upTime int64, cpuUsage float64, err error) {
 	tmpTotal := nowTotal - lastCpuTotal
 	tmpIdle := nowIdle - lastCpuIdle
 
-	cpuUsage = math.Trunc((float64(tmpTotal-tmpIdle)/float64(tmpTotal))*10000) / 100
+	if tmpTotal > 0 {
+		cpuUsage = math.Trunc((float64(tmpTotal-tmpIdle)/float64(tmpTotal))*10000) / 100
+	}
 
 	lastCpuIdle = nowIdle
 	lastCpuTotal = nowTotal
@@ -206,7 +209,11 @@ func GetSystemData() {
 		if viper.GetBool(constData.ConfAllowGetNvmeKey) {
 			nvmeTemperature, nvmeAvailSpare, err := getNvmeInfo()
 			if err != nil {
-
+				log.WithFields(log.Fields{
+					"op":   "get_system_data",
+					"step": "get_nvme_info",
+					"err":  err,
+				}).Warn()
 			} else {
 				newSystemCacheData.NvmeTemperature = nvmeTemperature
 				newSystemCacheData.NvmeAvailSpare = nvmeAvailSpare

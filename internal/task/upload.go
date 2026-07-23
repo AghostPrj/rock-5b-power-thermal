@@ -7,15 +7,14 @@
 package task
 
 import (
-	"context"
 	"encoding/json"
+	"time"
+
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
-	amqp "github.com/rabbitmq/amqp091-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"time"
 )
 
 func UploadData() {
@@ -75,44 +74,10 @@ func UploadData() {
 			if viper.GetBool(constData.ConfAppAllowMqttUploadKey) {
 				go func(jsonString string) {
 					publishToken := global.MqttClient.Publish(global.MqttUploadTopic, 0, false, jsonString)
-					_ = publishToken.Wait()
+					if !publishToken.WaitTimeout(5 * time.Second) {
+						log.WithField("op", "upload").WithField("step", "mqtt_publish").Warn("mqtt publish timeout")
+					}
 				}(string(uploadDataJson))
-			}
-
-			if viper.GetBool(constData.ConfAppAllowUploadRabbitmqKey) {
-				go func(jsonByte []byte) {
-					testCount := 0
-					for {
-						if global.RabbitmqUploadChannel.IsClosed() {
-							testCount++
-							time.Sleep(time.Millisecond * 5)
-						} else {
-							break
-						}
-
-						if testCount > 10 {
-							break
-						}
-					}
-
-					if testCount >= 10 {
-						return
-					}
-
-					err = global.RabbitmqUploadChannel.PublishWithContext(context.Background(),
-						viper.GetString(constData.ConfAppRabbitmqUploadExchangeKey), global.RabbitmqRoutingKey, false, false, amqp.Publishing{
-							ContentType: "application/json",
-							Body:        jsonByte,
-						})
-					if err != nil {
-						log.WithFields(log.Fields{
-							"op":   "upload",
-							"step": "upload_rabbitmq",
-							"err":  err,
-						}).Warn()
-					}
-				}(uploadDataJson)
-
 			}
 
 		}

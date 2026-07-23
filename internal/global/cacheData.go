@@ -7,8 +7,9 @@
 package global
 
 import (
-	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
 	"sync"
+
+	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
 )
 
 var (

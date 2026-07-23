@@ -8,10 +8,11 @@ package task
 
 import (
 	"encoding/json"
-	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
-	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
 	"strings"
 	"time"
+
+	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
+	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
 )
 
 func ProcessRawSerialData(chanRcvSerialData <-chan string, chanSingleData chan<- string) {
@@ -96,7 +97,9 @@ func CacheData(chanSingleData <-chan string) {
 					outputData.RawInputVoltage[2] = 0
 				}
 
-				outputData.InputVoltage = (outputData.RawInputVoltage[0] + outputData.RawInputVoltage[1] + outputData.RawInputVoltage[2]) / float32(divNum)
+				if divNum > 0 {
+					outputData.InputVoltage = (outputData.RawInputVoltage[0] + outputData.RawInputVoltage[1] + outputData.RawInputVoltage[2]) / float32(divNum)
+				}
 				outputData.InputPower = outputData.InputCurrent * outputData.InputVoltage
 
 				global.McuDataCacheLock.Lock()

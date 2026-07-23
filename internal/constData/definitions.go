@@ -39,15 +39,11 @@ const (
 	EnvAppAllowMqttUploadKey  = "app_upload_mqtt_allow"
 	DefaultAppAllowMqttUpload = false
 
-	ConfAppAllowUploadRabbitmqKey = "app.upload.rabbitmq.allow"
-	EnvAppAllowUploadRabbitmqKey  = "app_upload_rabbitmq_allow"
-	DefaultAppAllowUploadRabbitmq = false
-
 	ConfAllowGetNvmeKey = "app.nvme.allow"
-	EnvAllowGetNvmeKey  = "app-nvme-allow"
+	EnvAllowGetNvmeKey  = "app_nvme_allow"
 	DefaultAllowGetNvme = true
 
 	ConfNvmePathKey = "app.nvme.path"
-	EnvNvmePathKey  = "app-nvme-path"
+	EnvNvmePathKey  = "app_nvme_path"
 	DefaultNvmePath = "/dev/nvme0n1"
 )

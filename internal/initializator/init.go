@@ -7,13 +7,14 @@
 package initializator
 
 import (
+	"net"
+	"os/exec"
+	"strings"
+
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/ggg17226/aghost-go-base/pkg/utils/configUtils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"net"
-	"os/exec"
-	"strings"
 )
 
 func InitApp() {
@@ -21,10 +22,6 @@ func InitApp() {
 	bindApiAppConfigKey()
 	bindApiAppConfigDefaultValue()
 	configUtils.InitConfigAndLog()
-
-	if viper.GetBool(constData.ConfAppAllowUploadRabbitmqKey) {
-		initRabbitmqClient()
-	}
 
 	if viper.GetBool(constData.ConfAppAllowMqttUploadKey) {
 		initMqtt()
@@ -53,21 +50,8 @@ func bindApiAppConfigKey() {
 		[]string{constData.ConfTtyPathKey, constData.EnvTtyPathKey},
 		[]string{constData.ConfUploadIntervalKey, constData.EnvUploadIntervalKey},
 		[]string{constData.ConfAppAllowMqttUploadKey, constData.EnvAppAllowMqttUploadKey},
-		[]string{constData.ConfAppAllowUploadRabbitmqKey, constData.EnvAppAllowUploadRabbitmqKey},
 		[]string{constData.ConfAllowGetNvmeKey, constData.EnvAllowGetNvmeKey},
 		[]string{constData.ConfNvmePathKey, constData.EnvNvmePathKey},
-
-		[]string{constData.ConfRabbitmqHostKey, constData.EnvRabbitmqHostKey},
-		[]string{constData.ConfRabbitmqPortKey, constData.EnvRabbitmqPortKey},
-		[]string{constData.ConfRabbitmqUserKey, constData.EnvRabbitmqUserKey},
-		[]string{constData.ConfRabbitmqPasswordKey, constData.EnvRabbitmqPasswordKey},
-		[]string{constData.ConfRabbitmqVirtualHostKey, constData.EnvRabbitmqVirtualHostKey},
-		[]string{constData.ConfRabbitmqChannelMaxKey, constData.EnvRabbitmqChannelMaxKey},
-		[]string{constData.ConfRabbitmqFrameSizeKey, constData.EnvRabbitmqFrameSizeKey},
-		[]string{constData.ConfRabbitmqHeartBeatKey, constData.EnvRabbitmqHeartBeatKey},
-		[]string{constData.ConfAppRabbitmqUploadExchangeKey, constData.EnvAppRabbitmqUploadExchangeKey},
-		[]string{constData.ConfAppRabbitmqUploadQueuePrefixKey, constData.EnvAppRabbitmqUploadQueuePrefixKey},
-		[]string{constData.ConfAppRabbitmqUploadRoutingPrefixKey, constData.EnvAppRabbitmqUploadRoutingPrefixKey},
 	)
 }
 func bindApiAppConfigDefaultValue() {
@@ -85,21 +69,8 @@ func bindApiAppConfigDefaultValue() {
 	viper.SetDefault(constData.ConfTtyPathKey, constData.DefaultTtyPath)
 	viper.SetDefault(constData.ConfUploadIntervalKey, constData.DefaultUploadInterval)
 	viper.SetDefault(constData.ConfAppAllowMqttUploadKey, constData.DefaultAppAllowMqttUpload)
-	viper.SetDefault(constData.ConfAppAllowUploadRabbitmqKey, constData.DefaultAppAllowUploadRabbitmq)
 	viper.SetDefault(constData.ConfAllowGetNvmeKey, constData.DefaultAllowGetNvme)
 	viper.SetDefault(constData.ConfNvmePathKey, constData.DefaultNvmePath)
-
-	viper.SetDefault(constData.ConfRabbitmqHostKey, constData.DefaultRabbitmqHost)
-	viper.SetDefault(constData.ConfRabbitmqPortKey, constData.DefaultRabbitmqPort)
-	viper.SetDefault(constData.ConfRabbitmqUserKey, constData.DefaultRabbitmqUser)
-	viper.SetDefault(constData.ConfRabbitmqPasswordKey, constData.DefaultRabbitmqPassword)
-	viper.SetDefault(constData.ConfRabbitmqVirtualHostKey, constData.DefaultRabbitmqVirtualHost)
-	viper.SetDefault(constData.ConfRabbitmqChannelMaxKey, constData.DefaultRabbitmqChannelMax)
-	viper.SetDefault(constData.ConfRabbitmqFrameSizeKey, constData.DefaultRabbitmqFrameSize)
-	viper.SetDefault(constData.ConfRabbitmqHeartBeatKey, constData.DefaultRabbitmqHeartBeat)
-	viper.SetDefault(constData.ConfAppRabbitmqUploadExchangeKey, constData.DefaultAppRabbitmqUploadExchange)
-	viper.SetDefault(constData.ConfAppRabbitmqUploadQueuePrefixKey, constData.DefaultAppRabbitmqUploadQueuePrefix)
-	viper.SetDefault(constData.ConfAppRabbitmqUploadRoutingPrefixKey, constData.DefaultAppRabbitmqUploadRoutingPrefix)
 }
 
 func getCpuSerialNum() (result string) {
@@ -121,9 +92,26 @@ func getMacAddress() (result string) {
 	if err != nil {
 		return ""
 	}
+
+	isValidMac := func(mac string) bool {
+		return mac != "" && len(mac) == 17 && strings.Trim(strings.ReplaceAll(mac, ":", ""), "0") != ""
+	}
+
 	for _, netInterface := range interfaces {
 		mac := netInterface.HardwareAddr.String()
-		if mac != "" && len(mac) == 17 && strings.Trim(strings.ReplaceAll(mac, ":", ""), "0") != "" {
+		if isValidMac(mac) {
+			if strings.HasPrefix(netInterface.Name, "eth") ||
+				strings.HasPrefix(netInterface.Name, "en") ||
+				strings.HasPrefix(netInterface.Name, "wlan") ||
+				strings.HasPrefix(netInterface.Name, "wl") {
+				return strings.ReplaceAll(mac, ":", "")
+			}
+		}
+	}
+
+	for _, netInterface := range interfaces {
+		mac := netInterface.HardwareAddr.String()
+		if isValidMac(mac) {
 			return strings.ReplaceAll(mac, ":", "")
 		}
 	}
@@ -132,7 +120,7 @@ func getMacAddress() (result string) {
 
 func getIdString() (result string) {
 	cpuSerialNum := getCpuSerialNum()
-	if cpuSerialNum != "" && len(cpuSerialNum) > 0 && strings.Trim(cpuSerialNum, "0") != "" {
+	if cpuSerialNum != "" && strings.Trim(cpuSerialNum, "0") != "" {
 		return cpuSerialNum
 	} else {
 		return getMacAddress()

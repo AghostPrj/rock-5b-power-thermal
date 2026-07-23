@@ -7,6 +7,9 @@
 package main
 
 import (
+	"runtime"
+	"time"
+
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/initializator"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/router"
@@ -14,8 +17,6 @@ import (
 	"github.com/md14454/gosensors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"runtime"
-	"time"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 
 	time.Sleep(time.Second * 5)
 
-	if viper.GetBool(constData.ConfAppAllowUploadRabbitmqKey) || viper.GetBool(constData.ConfAppAllowMqttUploadKey) {
+	if viper.GetBool(constData.ConfAppAllowMqttUploadKey) {
 		go task.UploadData()
 	}
 

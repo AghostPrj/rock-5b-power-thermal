@@ -7,6 +7,13 @@
 package router
 
 import (
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
@@ -14,15 +21,34 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"net/http"
 )
 
 func StartGinServer(router *gin.Engine) {
-	err := router.Run(viper.GetString(constData.ConfServerListenHostKey) +
-		":" + viper.GetString(constData.ConfServerListenPortKey))
-	if err != nil {
-		log.WithField("err", err.Error()).WithField("op", "startup").Fatal()
+	addr := viper.GetString(constData.ConfServerListenHostKey) +
+		":" + viper.GetString(constData.ConfServerListenPortKey)
+
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: router,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.WithField("err", err.Error()).WithField("op", "startup").Fatal()
+		}
+	}()
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	<-sigCh
+	log.WithField("op", "shutdown").Info("received shutdown signal")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.WithField("err", err).WithField("op", "shutdown").Fatal()
+	}
+	log.WithField("op", "shutdown").Info("server stopped")
 }
 
 func handleAccess(context *gin.Context) {
@@ -54,6 +80,7 @@ func handleAccess(context *gin.Context) {
 func BuildGinRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
+	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	if viper.GetBool(constData.ConfDebugFlagKey) {
 		router.Use(cors.New(cors.Config{
@@ -61,8 +88,7 @@ func BuildGinRouter() *gin.Engine {
 			AllowMethods:     []string{"*"},
 			AllowHeaders:     []string{"*"},
 			AllowCredentials: true,
-			ExposeHeaders: []string{"Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, " +
-				"Cache-Control, Content-Language, Content-Type, x-transfer-token, x-captcha-id, uri"},
+			ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Cache-Control", "Content-Language", "Content-Type", "x-transfer-token", "x-captcha-id", "uri"},
 		}))
 	}
 

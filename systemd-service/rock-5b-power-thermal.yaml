@@ -9,17 +9,6 @@ app:
       # mqtt发布消息的topic路径，会在启动后自动拼接上/proc/cpuinfo中的Serial
       # MQTT message publish topic path, will automatically append the Serial from /proc/cpuinfo at startup
       topic_prefix: "topic/mqtt-ha/rock-5b/status-"
-    rabbitmq:
-      # 通过rabbitmq主动上传数据
-      # Actively upload data via RabbitMQ
-      allow: false
-      # rabbitmq消息路由配置，仅app.upload.rabbitmq.allow为true时生效
-      # RabbitMQ message routing configuration, only effective when app.upload.rabbitmq.allow is true
-      exchange: "rock_5b_status_exchange"
-      # 以下两个值会在启动后自动拼接上/proc/cpuinfo中的Serial
-      # The following two values will automatically append the Serial from /proc/cpuinfo at startup
-      queue_prefix: "rock_5b_status_queue-"
-      routing_prefix: "rock_5b_status_routing-"
     # 主动上传数据的间隔，单位为秒
     # Interval for active data upload, in seconds
     interval: 10
@@ -57,15 +46,3 @@ app:
     port: 1883
     user: ""
     password: ""
-
-  # rabbitmq连接配置，仅app.upload.rabbitmq.allow为true时生效
-  # RabbitMQ connection configuration, only effective when app.upload.rabbitmq.allow is true
-  rabbitmq:
-    host: "127.0.0.1"
-    port: 5672
-    user: ""
-    password: ""
-    virtual_host: "/"
-    channel_max: 0
-    frame_size: 0
-    heart_beat: "1s"
