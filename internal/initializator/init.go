@@ -48,6 +48,8 @@ func bindApiAppConfigKey() {
 		[]string{constData.ConfAppUploadMqttTopicPrefixKey, constData.EnvAppUploadMqttTopicPrefixKey},
 
 		[]string{constData.ConfTtyPathKey, constData.EnvTtyPathKey},
+		[]string{constData.ConfInputCurrentMultiplierKey, constData.EnvInputCurrentMultiplierKey},
+		[]string{constData.ConfInputCurrentDivisorKey, constData.EnvInputCurrentDivisorKey},
 		[]string{constData.ConfUploadIntervalKey, constData.EnvUploadIntervalKey},
 		[]string{constData.ConfAppAllowMqttUploadKey, constData.EnvAppAllowMqttUploadKey},
 		[]string{constData.ConfAllowGetNvmeKey, constData.EnvAllowGetNvmeKey},
@@ -67,6 +69,8 @@ func bindApiAppConfigDefaultValue() {
 	viper.SetDefault(constData.ConfAppUploadMqttTopicPrefixKey, constData.DefaultAppUploadMqttTopicPrefix)
 
 	viper.SetDefault(constData.ConfTtyPathKey, constData.DefaultTtyPath)
+	viper.SetDefault(constData.ConfInputCurrentMultiplierKey, constData.DefaultInputCurrentMultiplier)
+	viper.SetDefault(constData.ConfInputCurrentDivisorKey, constData.DefaultInputCurrentDivisor)
 	viper.SetDefault(constData.ConfUploadIntervalKey, constData.DefaultUploadInterval)
 	viper.SetDefault(constData.ConfAppAllowMqttUploadKey, constData.DefaultAppAllowMqttUpload)
 	viper.SetDefault(constData.ConfAllowGetNvmeKey, constData.DefaultAllowGetNvme)

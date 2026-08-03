@@ -29,6 +29,12 @@ app:
     # Local serial port for communication with MCU
     path: "/dev/ttyS7"
 
+  # 输入电流校正系数：ADC值 × multiplier ÷ divisor
+  # Input current calibration: ADC value × multiplier ÷ divisor
+  input_current:
+    multiplier: 1
+    divisor: 500
+
   # nvme数据采集配置
   # NVMe data collection configuration
   nvme:

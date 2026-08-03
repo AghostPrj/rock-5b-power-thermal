@@ -23,6 +23,14 @@ const (
 	EnvTtyPathKey  = "app_tty_path"
 	DefaultTtyPath = "/dev/ttyS7"
 
+	ConfInputCurrentMultiplierKey = "app.input_current.multiplier"
+	EnvInputCurrentMultiplierKey  = "app_input_current_multiplier"
+	DefaultInputCurrentMultiplier = float64(1)
+
+	ConfInputCurrentDivisorKey = "app.input_current.divisor"
+	EnvInputCurrentDivisorKey  = "app_input_current_divisor"
+	DefaultInputCurrentDivisor = float64(500)
+
 	ConfServerListenPortKey = "app.server.listen.port"
 	EnvServerListenPortKey  = "app_server_listen_port"
 	DefaultServerListenPort = 11099

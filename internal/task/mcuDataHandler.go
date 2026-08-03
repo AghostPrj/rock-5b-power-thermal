@@ -11,8 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AghostPrj/rock-5b-power-thermal/internal/constData"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/global"
 	"github.com/AghostPrj/rock-5b-power-thermal/internal/object"
+	"github.com/spf13/viper"
 )
 
 func ProcessRawSerialData(chanRcvSerialData <-chan string, chanSingleData chan<- string) {
@@ -60,6 +62,11 @@ func CacheData(chanSingleData <-chan string) {
 			}
 
 			if transferData != nil && transferData.Data != nil && transferData.Operation == "data_transfer" {
+				inputCurrent := float32(0)
+				inputCurrentDivisor := viper.GetFloat64(constData.ConfInputCurrentDivisorKey)
+				if inputCurrentDivisor != 0 {
+					inputCurrent = float32(float64(transferData.Data.AdcValueChannel4) * viper.GetFloat64(constData.ConfInputCurrentMultiplierKey) / inputCurrentDivisor)
+				}
 
 				outputData = &object.McuCacheData{
 					UpdateAt:          time.Now().Unix(),
@@ -68,7 +75,7 @@ func CacheData(chanSingleData <-chan string) {
 					McuSystemTick:     transferData.Data.SystemTick,
 					VddaValue:         float32(transferData.Data.VddaValue) / 1000,
 					McuTemperature:    transferData.Data.McuTemperature,
-					InputCurrent:      float32(transferData.Data.AdcValueChannel4) / 500,
+					InputCurrent:      inputCurrent,
 					SensorTemperature: transferData.Data.SensorTemperature,
 					FanPwmDuty:        transferData.Data.FanPwmDuty,
 					FanSpeed:          transferData.Data.FanSpeed,
